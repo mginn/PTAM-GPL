@@ -35,7 +35,7 @@ private:
   
   CVD::Image<CVD::Rgb<CVD::byte> > mimFrameRGB;
   CVD::Image<CVD::byte> mimFrameBW;
-  
+  GLWindow2 mGLWindow;
   Map *mpMap; 
   MapMaker *mpMapMaker; 
   Tracker *mpTracker; 

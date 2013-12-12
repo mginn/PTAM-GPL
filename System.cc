@@ -15,10 +15,10 @@ using namespace GVars3;
 
 
 System::System()
-// : mGLWindow(mVideoSource.Size(), "PTAM")
+ : mGLWindow(mVideoSource.Size(), "PTAM")
 {
-  //GUI.RegisterCommand("exit", GUICommandCallBack, this);
-  //GUI.RegisterCommand("quit", GUICommandCallBack, this);
+  GUI.RegisterCommand("exit", GUICommandCallBack, this);
+  GUI.RegisterCommand("quit", GUICommandCallBack, this);
   
   mimFrameBW.resize(mVideoSource.Size());
   mimFrameRGB.resize(mVideoSource.Size());
@@ -41,17 +41,17 @@ System::System()
   mpMap = new Map;
   mpMapMaker = new MapMaker(*mpMap, *mpCamera);
   mpTracker = new Tracker(mVideoSource.Size(), *mpCamera, *mpMap, *mpMapMaker);
-  //mpARDriver = new ARDriver(*mpCamera, mVideoSource.Size(), mGLWindow);
-  //mpMapViewer = new MapViewer(*mpMap, mGLWindow);
+  mpARDriver = new ARDriver(*mpCamera, mVideoSource.Size(), mGLWindow);
+  mpMapViewer = new MapViewer(*mpMap, mGLWindow);
   
-  //GUI.ParseLine("GLWindow.AddMenu Menu Menu");
-  //GUI.ParseLine("Menu.ShowMenu Root");
-  //GUI.ParseLine("Menu.AddMenuButton Root Reset Reset Root");
-  //GUI.ParseLine("Menu.AddMenuButton Root Spacebar PokeTracker Root");
-  //GUI.ParseLine("DrawAR=0");
-  //GUI.ParseLine("DrawMap=0");
-  //GUI.ParseLine("Menu.AddMenuToggle Root \"View Map\" DrawMap Root");
-  //GUI.ParseLine("Menu.AddMenuToggle Root \"Draw AR\" DrawAR Root");
+  GUI.ParseLine("GLWindow.AddMenu Menu Menu");
+  GUI.ParseLine("Menu.ShowMenu Root");
+  GUI.ParseLine("Menu.AddMenuButton Root Reset Reset Root");
+  GUI.ParseLine("Menu.AddMenuButton Root Spacebar PokeTracker Root");
+  GUI.ParseLine("DrawAR=0");
+  GUI.ParseLine("DrawMap=0");
+  GUI.ParseLine("Menu.AddMenuToggle Root \"View Map\" DrawMap Root");
+  GUI.ParseLine("Menu.AddMenuToggle Root \"Draw AR\" DrawAR Root");
   
   mbDone = false;
 };
@@ -70,48 +70,48 @@ void System::Run()
       static bool bFirstFrame = true;
       if(bFirstFrame)
 	{
-	  // mpARDriver->Init();
+	  mpARDriver->Init();
 	  bFirstFrame = false;
 	}
       
-      //mGLWindow.SetupViewport();
-      //mGLWindow.SetupVideoOrtho();
-      //mGLWindow.SetupVideoRasterPosAndZoom();
+      mGLWindow.SetupViewport();
+      mGLWindow.SetupVideoOrtho();
+      mGLWindow.SetupVideoRasterPosAndZoom();
       
       if(!mpMap->IsGood())
-	//mpARDriver->Reset();
+	mpARDriver->Reset();
       
       static gvar3<int> gvnDrawMap("DrawMap", 0, HIDDEN|SILENT);
       static gvar3<int> gvnDrawAR("DrawAR", 0, HIDDEN|SILENT);
       
-      //bool bDrawMap = mpMap->IsGood() && *gvnDrawMap;
-      //bool bDrawAR = mpMap->IsGood() && *gvnDrawAR;
+      bool bDrawMap = mpMap->IsGood() && *gvnDrawMap;
+      bool bDrawAR = mpMap->IsGood() && *gvnDrawAR;
       
       mpTracker->TrackFrame(mimFrameBW, false);
       
-      //if(bDrawMap)
-	;//mpMapViewer->DrawMap(mpTracker->GetCurrentPose());
-	//else if(bDrawAR)
-	//mpARDriver->Render(mimFrameRGB, mpTracker->GetCurrentPose());
+      if(bDrawMap)
+	mpMapViewer->DrawMap(mpTracker->GetCurrentPose());
+	else if(bDrawAR)
+	mpARDriver->Render(mimFrameRGB, mpTracker->GetCurrentPose());
 
-      //      mGLWindow.GetMousePoseUpdate();
+            mGLWindow.GetMousePoseUpdate();
       string sCaption;
-      //if(bDrawMap)
-	;//sCaption = mpMapViewer->GetMessageForUser();
-	//else
+      if(bDrawMap)
+	sCaption = mpMapViewer->GetMessageForUser();
+	else
 	sCaption = mpTracker->GetMessageForUser();
 	cout << sCaption << endl;
-      //mGLWindow.DrawMenus();
-      //mGLWindow.swap_buffers();
-      //mGLWindow.HandlePendingEvents();
+      mGLWindow.DrawMenus();
+      mGLWindow.swap_buffers();
+      mGLWindow.HandlePendingEvents();
     }
 }
 
-//void System::GUICommandCallBack(void *ptr, string sCommand, string sParams)
-//{
-//  if(sCommand=="quit" || sCommand == "exit")
-//static_cast<System*>(ptr)->mbDone = true;
-//}
+void System::GUICommandCallBack(void *ptr, string sCommand, string sParams)
+{
+  if(sCommand=="quit" || sCommand == "exit")
+static_cast<System*>(ptr)->mbDone = true;
+}
 
 
 

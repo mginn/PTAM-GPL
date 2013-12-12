@@ -345,7 +345,7 @@ void Tracker::TrackForInitialMap()
 	  Reset();
 	  return;
 	}
-      //mbcount = mbcount + 1;
+      
 
       // If the user pressed spacebar here, use trails to run stereo and make the intial map..
       if(mbUserPressedSpacebar)
